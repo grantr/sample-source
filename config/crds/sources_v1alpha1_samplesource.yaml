@@ -27,8 +27,18 @@ spec:
         metadata:
           type: object
         spec:
+          properties:
+            sink:
+              description: Sink is a reference to an object that will resolve to a
+                domain name to use as the sink.
+              type: object
           type: object
         status:
+          properties:
+            sinkURI:
+              description: SinkURI is the current active sink URI that has been configured
+                for the ContainerSource.
+              type: string
           type: object
   version: v1alpha1
 status:

@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -25,12 +26,22 @@ import (
 
 // SampleSourceSpec defines the desired state of SampleSource
 type SampleSourceSpec struct {
+	// Sink is a reference to an object that will resolve to a domain name to use
+	// as the sink.
+	// +optional
+	Sink *corev1.ObjectReference `json:"sink,omitempty"`
+
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
 
 // SampleSourceStatus defines the observed state of SampleSource
 type SampleSourceStatus struct {
+	// SinkURI is the current active sink URI that has been configured for the
+	// SampleSource.
+	// +optional
+	SinkURI string `json:"sinkURI,omitempty"`
+
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
