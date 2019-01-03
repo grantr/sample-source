@@ -1,0 +1,9 @@
+apiVersion: sources.knative.dev/v1alpha1
+kind: SampleSource
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: samplesource-sample
+spec:
+  # Add fields here
+  foo: bar
