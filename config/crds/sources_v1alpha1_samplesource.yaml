@@ -37,7 +37,7 @@ spec:
           properties:
             sinkURI:
               description: SinkURI is the current active sink URI that has been configured
-                for the ContainerSource.
+                for the SampleSource.
               type: string
           type: object
   version: v1alpha1
