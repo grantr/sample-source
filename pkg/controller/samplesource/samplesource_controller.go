@@ -20,6 +20,7 @@ import (
 	"context"
 
 	sourcesv1alpha1 "github.com/knative/sample-source/pkg/apis/sources/v1alpha1"
+	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -92,5 +93,30 @@ func (r *ReconcileSampleSource) Reconcile(request reconcile.Request) (reconcile.
 		return reconcile.Result{}, err
 	}
 
-	return reconcile.Result{}, nil
+	// Create a copy to determine whether the instance has been modified.
+	original := instance.DeepCopy()
+
+	// Reconcile the object. If an error occurred, don't return immediately;
+	// update the object Status first.
+	reconcileErr := r.reconcile(context.TODO(), instance)
+
+	// Update object Status if necessary. This happens even if the reconcile
+	// returned an error.
+	if !equality.Semantic.DeepEqual(original.Status, instance.Status) {
+		log.Info("Updating Status", "request", request.NamespacedName)
+		// An error may occur here if the object was updated since the last Get.
+		// Return the error so the request can be retried later.
+		// This call uses the /status subresource to ensure that the object's spec
+		// is never updated by the controller.
+		if err := r.Status().Update(context.TODO(), instance); err != nil {
+			return reconcile.Result{}, err
+		}
+	}
+
+	return reconcile.Result{}, reconcileErr
+}
+
+func (r *ReconcileSampleSource) reconcile(ctx context.Context, instance *sourcesv1alpha1.SampleSource) error {
+	//TODO(user): Implement reconciliation
+	return nil
 }
