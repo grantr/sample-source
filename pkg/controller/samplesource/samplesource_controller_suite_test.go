@@ -25,6 +25,8 @@ import (
 
 	"github.com/knative/sample-source/pkg/apis"
 	"github.com/onsi/gomega"
+	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
@@ -37,6 +39,20 @@ var cfg *rest.Config
 func TestMain(m *testing.M) {
 	t := &envtest.Environment{
 		CRDDirectoryPaths: []string{filepath.Join("..", "..", "..", "config", "crds")},
+		CRDs: []*apiextensionsv1beta1.CustomResourceDefinition{{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "testsinks.sources.knative.dev",
+			},
+			Spec: apiextensionsv1beta1.CustomResourceDefinitionSpec{
+				Group: "sources.knative.dev",
+				Names: apiextensionsv1beta1.CustomResourceDefinitionNames{
+					Kind:   "TestSink",
+					Plural: "testsinks",
+				},
+				Scope:   apiextensionsv1beta1.NamespaceScoped,
+				Version: "v1alpha1",
+			},
+		}},
 	}
 	apis.AddToScheme(scheme.Scheme)
 
