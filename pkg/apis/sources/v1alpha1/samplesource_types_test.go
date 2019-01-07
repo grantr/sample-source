@@ -53,16 +53,23 @@ func TestStorageSampleSource(t *testing.T) {
 	g.Expect(c.Get(context.TODO(), key, fetched)).NotTo(gomega.HaveOccurred())
 	g.Expect(fetched).To(gomega.Equal(created))
 
-	// Test Updating the Labels and Status
+	// Test Updating the Labels
 	updated := fetched.DeepCopy()
 	updated.Labels = map[string]string{"hello": "world"}
+	g.Expect(c.Update(context.TODO(), updated)).NotTo(gomega.HaveOccurred())
+	g.Expect(c.Get(context.TODO(), key, fetched)).NotTo(gomega.HaveOccurred())
+	g.Expect(fetched).To(gomega.Equal(updated))
+
+	// Test Updating the Status via subresource
 	updated.Status = SampleSourceStatus{
 		SinkURI: "http://example.com",
 	}
-	g.Expect(c.Update(context.TODO(), updated)).NotTo(gomega.HaveOccurred())
-
+	// DeepCopy is required here because the Status update will set the SelfLink
+	// to reference to /status subresource instead of the original resource.
+	statusupdated := updated.DeepCopy()
+	g.Expect(c.Status().Update(context.TODO(), statusupdated)).NotTo(gomega.HaveOccurred())
 	g.Expect(c.Get(context.TODO(), key, fetched)).NotTo(gomega.HaveOccurred())
-	g.Expect(fetched).To(gomega.Equal(updated))
+	g.Expect(fetched.Status).To(gomega.Equal(updated.Status))
 
 	// Test Delete
 	g.Expect(c.Delete(context.TODO(), fetched)).NotTo(gomega.HaveOccurred())
