@@ -51,6 +51,7 @@ type SampleSourceStatus struct {
 
 // SampleSource is the Schema for the samplesources API
 // +k8s:openapi-gen=true
+// +kubebuilder:subresource:status
 type SampleSource struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
